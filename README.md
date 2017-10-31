@@ -6,7 +6,7 @@ REST Server for Modelling and Publishing Vehicle/Device Pairing Data
 
 ```bash
 # clone repo
-git clone https://github.com/Microsoft/vscode-react-sample.git react-todo
+git clone https://github.com/ravin-abraham/caa-server.git caa-server
 
 # navigate to repo
 cd node-app
