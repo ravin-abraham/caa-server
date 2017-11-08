@@ -133,6 +133,11 @@ Response:
 }
 ```
 
+## Front End
+An Angular based frontend proof of concept is accessible at root url (e.g. http://localhost:3001/). Live data is updated in real time from the backend server for any updates for the latest active pair session.
+
+![Alt text](/front_end_screenshot.png?raw=true "UI Prototype")
+
 ## Technologies
 * [node](https://nodejs.org/en/)
 * [express](http://expressjs.com/)
