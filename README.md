@@ -1,6 +1,6 @@
 # CAA-SERVER 
 
-REST Server for Modelling and Publishing Vehicle/Device Pairing Data
+REST Server for Modelling and Publishing Vehicle/Device Pairing Data and an Angular Single Page Application to render the published data.
 
 ## Getting Started
 
@@ -9,12 +9,12 @@ REST Server for Modelling and Publishing Vehicle/Device Pairing Data
 git clone https://github.com/ravin-abraham/caa-server.git caa-server
 
 # navigate to repo
-cd node-app
+cd caa-server
 
 # install deps
 npm install
 
-# build front-end assets (optional)
+# build front-end assets
 npm run build
 
 # Start backend
