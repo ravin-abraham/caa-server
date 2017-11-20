@@ -1,48 +1,11 @@
-<!doctype html>
-<html>
- <body ng-app="dashboard">
+<!DOCTYPE html>
+<html ng-app="meanApp">
+<head>
+  <title>CAA Server</title>
+  <base href="/">
+</head>
+	<body ng-view>
 
-  <div ng-controller="dashboardController as ctrl">
-   
-   <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-12">
-        <div class="page-header">
-          <h1>
-            Real Time Pairing Data
-          </h1>
-        </div>
-      
-      <div class="row">
-          <div class="col-md-6">    
-          <div class="progress">      
-            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" 
-                 style="width: {{latestMatchValue}}%"> 
-            </div>
-          </div>
-          <span class="label label-primary">Current Match Percentage</span> {{latestMatchValue}}%
-          </div>
-          <div class="col-md-6">
-            <p>
-              <p> {{lastRefreshed}} </p>
-              <pre> {{data | json}} </pre>
-            </p>
-          </div>
-      </div>
-    
-  
-    <div class="row">
-        <div class="col-md-12">       
-          
-        </div>
-    </div>
+	</body>
 
-  </div>
- </div>
-</div>
-
-</div>
-
-</body>
 </html>
-

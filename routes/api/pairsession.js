@@ -8,7 +8,7 @@ router.post('/', function(req, res, next) {
    var insertedId = result.insertedId; 
    console.log("Inserted document with primary key id : ",insertedId);
    console.log("Inserted result : ",result);
-   res.send( result );
+   return res.send( result );
    next();
   })
   .catch(function (err) {   
@@ -16,14 +16,20 @@ router.post('/', function(req, res, next) {
   });
 });
 
-/* Retrieve details for pair session referenced by Id or last updated pair session */
+/* Retrieve details for pair session referenced by Id or last updated pair session 
+   Enforcing JWT authentication for this endpoint */
 router.get('/:id', function(req, res, next) {
+  console.log("Token details: ", req.payload.email);
+   if (!req.payload.email) {
+   		return errorResponse(null, 401, "UnauthorizedError.", res, next);   	  
+   }
+
   if (req.params.id == "latest")
   {
   	database.getLatestPairSession()
   	.then(function(result){
     	console.log("Details for most recent pair session");
-    	res.send(result);
+    	return res.send(result);
     	next();    
   	})
   	.catch(function (err) {    	
@@ -36,7 +42,7 @@ router.get('/:id', function(req, res, next) {
   	database.getPairSessionById(req.params.id)
   	.then(function(result){
     	console.log("Details for document with Id : ", req.params.id);
-    	res.send(result);
+    	return res.send(result);
     	next();
   	})
   	.catch(function (err) {    	
@@ -48,7 +54,6 @@ router.get('/:id', function(req, res, next) {
 
 /* Handle a Patch Request to update pair match value and optional vehicle data and device data */
 router.patch('/:id', function (req, res, next) {
-	
 	var patch_request_array = JSON.parse(JSON.stringify(req.body));	
 	if (!validatePatchRequest(patch_request_array)){
 		return errorResponse(null, 500, "Schema Validation Failed for Patch Request.", res, next);
@@ -57,7 +62,7 @@ router.patch('/:id', function (req, res, next) {
   	database.updateSessionData(patch_request_array,req.params.id)
   	.then(function(result){
     	console.log("Update details for document with Id : ", req.params.id, result);
-    	res.send(result);
+    	return res.send(result);
     	next();
   	})
   	.catch(function (err) {
@@ -69,7 +74,7 @@ router.patch('/:id', function (req, res, next) {
 function errorResponse(err, code, msg, res, next){
 	console.log(err);
 	res.statusCode = code;
-	res.send({errors: [msg]});
+	return res.send({errors: [msg]});
 	next();
 }
 

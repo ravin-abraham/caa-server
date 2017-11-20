@@ -1,21 +1,22 @@
 'use strict';
 
+DashboardCtrl.$inject = ['$http', '$timeout', 'authentication'];
 
-function DashboardController($scope, $http, $timeout) {
+function DashboardCtrl($http, $timeout, authentication) {
 	
+	var vm = this;
 	var loadTime = 1000, errorCount = 0, loadPromise;
 
 	var getData = function() {  
-    $http.get('/api/pairsession/latest')
-
+    $http.get('/api/pairsession/latest',{ headers: { Authorization: 'Bearer '+ authentication.getToken() } })
     .then(function(res) {
     	var current_ts = Date.now();
-    	$scope.lastRefreshed = "Last refreshed at " + current_ts;
-      	$scope.data = res.data;
+    	vm.lastRefreshed = "Last refreshed at " + current_ts;
+      	vm.data = res.data;
 
       	var current_val_obj_from_server = res.data[0].pair_match_value[res.data[0].pair_match_value.length - 1];
       	var pair_val_from_current_val_obj = Object.values(current_val_obj_from_server);      	
-      	$scope.latestMatchValue = pair_val_from_current_val_obj[0];
+      	vm.latestMatchValue = pair_val_from_current_val_obj[0];
       	//For testing.
       	//$scope.latestMatchValue = Math.floor((Math.random() * 100) + 1);
       	errorCount = 0;
@@ -24,7 +25,7 @@ function DashboardController($scope, $http, $timeout) {
 
     .catch(function(res) {  
     	console.log(res);  	
-      	$scope.data = 'Server error';
+      	vm.data = 'Server error';
       	nextLoad(++errorCount * 2 * loadTime);
     	});
   	};
@@ -45,13 +46,13 @@ function DashboardController($scope, $http, $timeout) {
 	getData();
 
     //Always clear the timeout when the view is destroyed, otherwise it will keep polling and leak memory
-    $scope.$on('$destroy', function() {
+    vm.$onDestroy = function ()  {
     cancelNextLoad();
-  });
+  };
 
 }
 
-module.exports = DashboardController;
+module.exports = DashboardCtrl;
 
 
 

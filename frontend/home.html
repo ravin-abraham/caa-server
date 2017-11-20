@@ -1,0 +1,38 @@
+
+   <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="page-header">
+          <h1>
+            Real Time Pairing Data
+          </h1>
+        </div>
+      
+      <div class="row">
+          <div class="col-md-6">    
+          <div class="progress">      
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" 
+                 style="width: {{vm.latestMatchValue}}%"> 
+            </div>
+          </div>
+          <span class="label label-primary">Current Match Percentage</span> {{vm.latestMatchValue}}%
+          </div>
+          <div class="col-md-6">
+            <p>
+              <p> {{vm.lastRefreshed}} </p>
+              <pre> {{vm.data | json}} </pre>
+            </p>
+          </div>
+      </div>
+    
+  
+    <div class="row">
+        <div class="col-md-12">       
+          
+        </div>
+    </div>
+
+  </div>
+ </div>
+</div>
+

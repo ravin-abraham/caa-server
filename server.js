@@ -1,16 +1,24 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var path = require('path');
 
 // Create server
 var server = express();
 server.use(bodyParser.json());
+//server.use(bodyParser.urlencoded({ extended: false }));
+server.use(cookieParser());
 
 
 // Serve static files
 server.use(express.static('dist'));
 
-//Set up
+
 server.use('/api', require('./routes/api'));
+
+server.route('/*').get(function(req, res) { 
+    return res.sendFile(path.join(__dirname, 'dist/index.html')); 
+});
 
 // Initialized Database Connection Pool
 var mongoUtil = require('./db/mongoUtil');
@@ -27,8 +35,3 @@ mongoUtil.connectToDatabase( function(err) {
     console.log('listening at %s', PORT);
   });
 });
-
-//Create Data and Insert
-//Read/Render Data in FE
-
-

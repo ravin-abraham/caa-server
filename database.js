@@ -1,5 +1,7 @@
 var mongoUtil = require( './db/mongoUtil' );
 var mongo = require('mongodb');
+var login_details = [];
+
 /* Utility Function */  
   function reflect(promise){
     return promise.then(function(v){ return {v:v, status: "resolved" }},
@@ -87,10 +89,35 @@ function dropCollections() {
   });
 };
 
+
+/* Authentication Related */
+
+//Register User
+function registerUser(email, password){
+  var user_object = {"email": email, "password": password};
+  login_details.push(user_object);
+  console.log("Current Login DB : ",user_object);
+  return Promise.resolve(true);
+};
+
+//Validate Login
+function validateLogin(email, password){
+  login_details.forEach(function(elem){
+    if (elem.email === email && elem.password === password)
+    {
+      console.log("Successfully validated password for email : ", email);
+      return Promise.resolve(true);
+    }
+  });
+  throw {err: "User Validation Failed"};
+};
+
 module.exports = {
   createPairSession: createPairSession,
   dropCollections: dropCollections,
   getPairSessionById: getPairSessionById,
   getLatestPairSession: getLatestPairSession,
-  updateSessionData: updateSessionData
+  updateSessionData: updateSessionData,
+  registerUser: registerUser,
+  validateLogin: validateLogin
 }
