@@ -1,0 +1,125 @@
+MongoDB = document store based NOSQL DB. 
+
+
+Mongo DB vs MySQL/Oracle (RDBMS):
+
+People are seeing real world MongoDB performance largely because MongoDB allows you to query in a different manner that is more sensible to your workload.
+
+For example, consider a design that persisted a lot of information about a complicated entity in a normalised fashion. This could easily use dozens of tables in MySQL (or any relational db) to store the data in normal form, with many indexes needed to ensure relational integrity between tables.
+
+Now consider the same design with a document store. If all of those related tables are subordinate to the main table (and they often are), then you might be able to model the data such that the entire entity is stored in a single document. In MongoDB you can store this as a single document, in a single collection. This is where MongoDB starts enabling superior performance.
+
+In MongoDB, to retrieve the whole entity, you have to perform:
+
+One index lookup on the collection (assuming the entity is fetched by id)
+Retrieve the contents of one database page (the actual binary json document)
+So a b-tree lookup, and a binary page read. Log(n) + 1 IOs. 
+
+In MySQL with 20 normalized tables, you have to perform:
+
+One index lookup on the root table (again, assuming the entity is fetched by id)
+
+20+ range lookups (hopefully on an index) for the entity's pk value
+20+ data lookups once we figure out what the appropriate child rows are.
+
+So the total for mysql, even assuming that all indexes are in memory (which is harder since there are 20 times more of them) is about 20 range lookups.
+
+These range lookups are likely comprised of random IO — different tables will definitely reside in different spots on disk, and it's possible that different rows in the same range in the same table for an entity might not be contiguous (depending on how the entity has been updated, etc).
+
+So for this example, the final tally is about 20 times more IO with MySQL per logical access, compared to MongoDB.
+
+This is how MongoDB can boost performance in some use cases.
+
+
+MongoDB vs Cassandra:
+
+Cassandra is a key value pair DB similar to REDIS. Designed for high scalability with multiple servers and sharding out of the box.
+
+CREATE TABLE "my_users" (
+    id uuid,
+    email text,
+    password blob,
+    country text,
+    PRIMARY KEY (country, id)
+);
+
+Sharding column: Primary Key
+
+[
+    {
+        "jochasinga": {
+            "email": "jo.chasinga@gmail.com",
+            "tweet": "I want to go to @banksy ‘s exhibition today so badly."
+        }
+    },
+    {
+        "banksy": {
+            "email": "banksy@bs.com",
+            "tweet": "@jochasinga come! I’m showing a lot of new work!"
+        }
+    },
+    {
+        "random_may": {
+            "email": "may_b@example.com",
+            "tweet": "The Ukraine situation is dreadful"
+        }
+    }
+]
+
+
+
+All 3 items can be stored on different servers. No contiguous storage for a table. Therefore query on non primary key (for e.g. "email") fails or is heavily deprecated. This is an important difference from MongoDB. Due to this difference,writes are highly scalable.
+
+
+
+Both databases perform well on reads where the hot data set fits in memory. Both also emphasize join-less data models (and encourage denormalization instead)
+
+Cassandra is a linearly scalable (amortized constant time reads & writes) dynamo/google bigtable hybrid that features fast writes regardless of data size. It's feature set is minimalistic, little beyond that of an ordered key value store. MongoDB is a heavily featured (and fast) document store at the cost of durability and guarantees about writes persisting (since they're not immediately written to disk).
+
+
+Sharding differences in latest Mongo DB and Cassandra, and why Cassandra still is the right choice for scalability:
+
+
+Cassandra
+Cassandra's sharding is based on either a consistent hash algorithm or an order preserving hash algorithm and a distributed ring. When an object is written to Cassandra, a hash of the object's key is used to determine which node in the Cassandra cluster will be written to. Cassandra will also replicate the object to W other nodes in the cluster based on the user's desired replication settings. If order preserving hashing is used, each node in the Cassandra cluster stores a range of the overall data whereas with consistent hashing, data is more or less randomly distributed across nodes. Objects are redistributed as nodes are added or removed from the cluster. 
+
+MongoDB
+MongoDB uses range based partitioning. The cluster is made up of 1 or more "shards" that store data. When a write or read occurs, the shard is selected by the "shard key" of the object (user configurable). As shards are added and removed from the cluster, MongoDB will redistribute data to balance load on each shard node. Unlike Cassandra, new nodes in a MongoDB cluster can be added either to scale reads (by adding read replicas to existing shards) or to scale writes (by adding new shards to the cluster). 
+
+Comparison
+
+In Cassandra, each shard is a single server and replication is achieved by storing an object on multiple shards. If a server dies, the object still lives (hopefully) at other shards. 
+
+In MongoDB, each shard is a replica-set of multiple servers. Objects live on a single shard and are replicated amongst the members of the replica set. If a server dies, another member of the replica set is elected to replace it. 
+
+
+CAP Theorem (Consistency, Availability, Partition Tolerance):
+MongoDB chooses consistency over availability for WRITE's. Cassandra chooses availability over consistency for writes. Hence MongoDB is CP and Cassandra is AP. 
+
+Traditional RDBMS are CA.
+
+Mongo DB Operations to try using Node:
+--------------------------------------
+Create table
+Insert item
+Find all items
+Find one item
+Update item
+Delete item
+Drop table
+
+
+
+Operational Tips
+----------------
+
+NO SQL databases are query oriented. This implies the design of the schema should fit the nature of queries. 
+
+Denormalization is the norm for NO SQL. No "first class" support for Joins.
+
+RDBMS are the opposite - Normalized schemas can support almost any type of query and aggregates without much cost.
+
+
+
+
+
